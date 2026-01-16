@@ -1,26 +1,43 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getDatabase } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-
-const routes = {
-  '#home': 'pages/home.html',
-  '#about': 'pages/about.html',
-};
+import { createActor } from 'https://unpkg.com/xstate@5.25.1/dist/xstate.esm.js';
+import { gameStateMachine } from '../statemachines/gameStateMachine.js';
 
 const content = document.getElementById('content');
 
-async function loadContent() {
-  const path = routes[window.location.hash] || routes['#home'];
+const gameActor = createActor(gameStateMachine);
+
+gameActor.subscribe((state) => {
+  loadContent(state.value);
+});
+
+async function loadContent(page) {
+  const path = `pages/${page}.html`;
   const response = await fetch(path);
   content.innerHTML = await response.text();
+  addEventListeners();
 }
 
-window.addEventListener('hashchange', loadContent);
+function addEventListeners() {
+  const registerButton = document.querySelector('#register-button');
+  if (registerButton) {
+    registerButton.addEventListener('click', () => {
+      gameActor.send({ type: 'REGISTER' });
+    });
+  }
+
+  const inviteButton = document.querySelector('#invite-button');
+  if (inviteButton) {
+    inviteButton.addEventListener('click', () => {
+      gameActor.send({ type: 'INVITE' });
+    });
+  }
+
+  const acceptButton = document.querySelector('#accept-button');
+  if (acceptButton) {
+    acceptButton.addEventListener('click', () => {
+      gameActor.send({ type: 'ACCEPT' });
+    });
+  }
+}
 
 // Initial load
-loadContent();
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-const analytics = getAnalytics(app);
+gameActor.start();

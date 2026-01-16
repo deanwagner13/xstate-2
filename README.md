@@ -17,3 +17,15 @@ js/main.js: This file contains a simple client-side router that loads content fr
 pages/: I've created a pages directory with home.html and about.html as the initial pages.
 Firebase Configuration: I've added firebase.json and .firebaserc to configure Firebase Hosting. You will need to replace the placeholder values in js/firebase-config.js and .firebaserc with your actual Firebase project credentials.
 blueprint.md: I've created a blueprint file to document the project's architecture and plan.
+
+Add a title to the nave bar that reads "Game Grid".  delete the current navigation and routes and pages in the pages directory.  
+
+The content area will display one of the following four pages:
+Game_Registration
+Player_Invitation
+Player_Acceptance
+Game_Page
+
+Create html fragments in the pages directory for each page which only contain the file name as an <h1> tag.
+
+Page navigation will be controlled by a finite state machine using the xstate library.  Page navigation will use the state chart attached. The initial state is Game_Registration.  The xstate createMachine function will be in its own file inside the statemachines directory.
